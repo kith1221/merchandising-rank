@@ -12,22 +12,27 @@
     "audit:revenue": "tsx scripts/audit-revenue.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.52.0",
     "next": "16.3.8",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "read-excel-file": "^9.3.10",
     "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@prisma/client": "^6.16.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bcryptjs": "^3.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
-    "prisma": "^7.10.0",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^6.16.3",
     "tsx": "^4.23.15",
     "typescript": "^5"
   }
