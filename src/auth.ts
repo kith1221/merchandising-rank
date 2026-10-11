@@ -1,8 +1,22 @@
 import NextAuth from 'next-auth'
-import type { NextAuthConfig } from 'next-auth'
+import type { NextAuthConfig, DefaultSession } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+
+interface UserRecord {
+  id: string
+  email: string
+  name: string | null
+}
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+    } & DefaultSession['user']
+  }
+}
 
 const credentialsProvider = Credentials({
   name: 'Credentials',
@@ -16,7 +30,7 @@ const credentialsProvider = Credentials({
     if (!user) return null
     const isValid = await bcrypt.compare(credentials.password as string, user.password)
     if (!isValid) return null
-    return { id: user.id, email: user.email, name: user.name }
+    return { id: user.id, email: user.email, name: user.name } satisfies UserRecord
   },
 })
 
@@ -24,12 +38,19 @@ export const authOptions = {
   providers: [credentialsProvider],
   session: { strategy: 'jwt' as const },
   callbacks: {
-    jwt: async ({ token, user }: any) => {
-      if (user) token.id = (user as any).id
+    jwt: ({ token, user }) => {
+      if (user && 'id' in user) {
+        ;(token as Record<string, unknown>).id = (user as UserRecord).id
+      }
       return token
     },
-    session: async ({ session, token }: any) => {
-      if (session.user) session.user.id = token.id as string
+    session: ({ session, token }) => {
+      if (session.user) {
+        const t = token as Record<string, unknown>
+        if (t.id && typeof t.id === 'string') {
+          ;(session.user as { id: string } & DefaultSession['user']).id = t.id
+        }
+      }
       return session
     },
   },

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const hashed = await bcrypt.hash(password, 10)
     await prisma.user.create({ data: { name: name || email, email, password: hashed } })
     return NextResponse.json({ ok: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Registrasi gagal' }, { status: 500 })
   }
 }
